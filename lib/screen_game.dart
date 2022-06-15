@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:playing_cards/playing_cards.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spider_solitaire/dialogs/records.dart';
+import 'package:spider_solitaire/dialogs/setting.dart';
 import 'auto_solver.dart';
+import 'const_value.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({Key? key}) : super(key: key);
@@ -25,50 +28,8 @@ bool _isStart = false;
 
 int typegame = 0, _gametime = 0, _gamescore = 500;
 
-TextStyle txtstyle = const TextStyle(fontFamilyFallback: <String>['Segoe UI']);
-
 PlayingCardViewStyle myCardStyles = const PlayingCardViewStyle();
 
-PlayingCardViewStyle essberger = PlayingCardViewStyle(
-    cardBackContentBuilder: (BuildContext context) => Image.asset(
-        "asset/Essberger/back.png",
-        fit: BoxFit.fill,
-        filterQuality: FilterQuality.high),
-    suitStyles: {
-      Suit.spades: SuitStyle(
-          builder: (context) => Image.asset("asset/Essberger/spade.png",
-              filterQuality: FilterQuality.high),
-          cardContentBuilders: {
-            CardValue.ace: (context) => Image.asset("asset/Essberger/as.png"),
-            CardValue.jack: (context) => Image.asset("asset/Essberger/js.png"),
-            CardValue.queen: (context) => Image.asset("asset/Essberger/qs.png"),
-            CardValue.king: (context) => Image.asset("asset/Essberger/ks.png"),
-          }),
-      Suit.hearts: SuitStyle(
-          builder: (context) => Image.asset("asset/Essberger/heart.png",
-              filterQuality: FilterQuality.high),
-          cardContentBuilders: {
-            CardValue.jack: (context) => Image.asset("asset/Essberger/jh.png"),
-            CardValue.queen: (context) => Image.asset("asset/Essberger/qh.png"),
-            CardValue.king: (context) => Image.asset("asset/Essberger/kh.png"),
-          }),
-      Suit.diamonds: SuitStyle(
-          builder: (context) => Image.asset("asset/Essberger/diamond.png",
-              filterQuality: FilterQuality.high),
-          cardContentBuilders: {
-            CardValue.jack: (context) => Image.asset("asset/Essberger/jd.png"),
-            CardValue.queen: (context) => Image.asset("asset/Essberger/qd.png"),
-            CardValue.king: (context) => Image.asset("asset/Essberger/kd.png"),
-          }),
-      Suit.clubs: SuitStyle(
-          builder: (context) => Image.asset("asset/Essberger/club.png",
-              filterQuality: FilterQuality.high),
-          cardContentBuilders: {
-            CardValue.jack: (context) => Image.asset("asset/Essberger/jc.png"),
-            CardValue.queen: (context) => Image.asset("asset/Essberger/qc.png"),
-            CardValue.king: (context) => Image.asset("asset/Essberger/kc.png"),
-          })
-    });
 List<List<int>> rowcard = [], rowsuit = [];
 List<List<bool>> rowcardFace = [];
 List<int> deckcard = [], deckcardsuit = [], domsuit = [];
@@ -150,7 +111,7 @@ class _GameScreenState extends State<GameScreen> {
 
     win() {
       stopTimer();
-      rerecords(_gametime, _gamescore);
+      reRecords(_gametime, _gamescore, typegame);
       showDialog(
         context: context,
         builder: (context) {
@@ -710,102 +671,6 @@ class _GameScreenState extends State<GameScreen> {
       }
     }
 
-    settingsSpiders() async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String design = (prefs.getString('design') ?? 'Default');
-      showDialog(
-          context: context,
-          builder: (context) {
-            return StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
-              return AlertDialog(
-                title: Center(child: Text("Settings ⚙", style: txtstyle)),
-                content: Center(
-                    child: Row(children: [
-                  const Text('Design choice:'),
-                  DropdownButton<String>(
-                    value: design,
-                    items: <String>['Default', 'Essberger']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? value) {
-                      setState(() {
-                        design = value!;
-                      });
-                    },
-                  )
-                ])),
-                actions: <Widget>[
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text("Close"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      await prefs.setString('design', design);
-                      desingCard();
-                      Navigator.pop(context);
-                      Future.delayed(const Duration(milliseconds: 100), () {
-                        rebuilddeck();
-                        rebuilddom();
-                        for (int i = 0; i < 10; i++) {
-                          rebuildcolumn(i);
-                        }
-                      });
-                    },
-                    child: const Text("Save"),
-                  ),
-                ],
-              );
-            });
-          });
-    }
-
-    getRecords() async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      int timesuitone = (prefs.getInt('timesuitone') ?? -1);
-      int scoresuitone = (prefs.getInt('scoresuitone') ?? 0);
-      String records = '';
-      timesuitone != -1
-          ? records +=
-      'One suit ♠\nTime: ${((timesuitone / 60).truncate()).toString().padLeft(2, '0')}:${(timesuitone % 60).toString().padLeft(2, '0')}\nScore: $scoresuitone'
-          : records += 'One suit ♠\nThe record is not set';
-      int timesuittwo = (prefs.getInt('timesuittwo') ?? -1);
-      int scoresuittwo = (prefs.getInt('scoresuittwo') ?? 0);
-      timesuittwo != -1
-          ? records +=
-      '\nTwo suits ♠ ♥\nTime: ${((timesuittwo / 60).truncate()).toString().padLeft(2, '0')}:${(timesuittwo % 60).toString().padLeft(2, '0')}\nScore: $scoresuittwo'
-          : records += '\nTwo suits ♠ ♥\nThe record is not set';
-      int timesuitfour = (prefs.getInt('timesuitfour') ?? -1);
-      int scoresuitfour = (prefs.getInt('scoresuitfour') ?? 0);
-      timesuitfour != -1
-          ? records +=
-      '\nFour suits ♠ ♥ ♣ ♦\nTime: ${((timesuitfour / 60).truncate()).toString().padLeft(2, '0')}:${(timesuitfour % 60).toString().padLeft(2, '0')}\nScore: $scoresuitfour'
-          : records += '\nFour suits ♠ ♥ ♣ ♦\nThe record is not set';
-      showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: Center(child: Text("Records 🏆", style: txtstyle)),
-              content: Center(child: Text(records, style: txtstyle)),
-              actions: <Widget>[
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text("Close"),
-                ),
-              ],
-            );
-          });
-    }
-
     restart() {
       showDialog(
         context: context,
@@ -816,42 +681,43 @@ class _GameScreenState extends State<GameScreen> {
               SimpleDialogOption(
                 onPressed: () {
                   typegame = 0;
-                  _isStart = false;
-                  stopTimer();
                   Navigator.pushReplacementNamed(context, '/game');
                 },
-                child: Center(child: Text('One suit ♠', style: txtstyle)),
+                child: Center(child: Text(difficulty[0])),
               ),
               SimpleDialogOption(
                 onPressed: () {
                   typegame = 1;
-                  _isStart = false;
-                  stopTimer();
                   Navigator.pushReplacementNamed(context, '/game');
                 },
-                child: Center(child: Text('Two suits ♠ ♥', style: txtstyle)),
+                child: Center(child: Text(difficulty[1])),
               ),
               SimpleDialogOption(
                 onPressed: () {
                   typegame = 2;
-                  _isStart = false;
-                  stopTimer();
                   Navigator.pushReplacementNamed(context, '/game');
                 },
-                child: Center(
-                    child: Text('Four suits ♠ ♥ ♣ ♦', style: txtstyle)),
+                child: Center(child: Text(difficulty[2])),
               ),
               SimpleDialogOption(
                 onPressed: () {
-                  getRecords();
+                  getRecords(context);
                 },
-                child: Center(child: Text('Records 🏆', style: txtstyle)),
+                child: const Center(child: Text('Records 🏆')),
               ),
               SimpleDialogOption(
                 onPressed: () {
-                  settingsSpiders();
+                  settingsSpiders(context, desingCard: desingCard, update: () {
+                    Future.delayed(const Duration(milliseconds: 100), () {
+                      rebuilddeck();
+                      rebuilddom();
+                      for (int i = 0; i < 10; i++) {
+                        rebuildcolumn(i);
+                      }
+                    });
+                  });
                 },
-                child: Center(child: Text('Settings ⚙', style: txtstyle)),
+                child: const Center(child: Text('Settings ⚙')),
               ),
             ],
           );
@@ -892,134 +758,106 @@ class _GameScreenState extends State<GameScreen> {
                         autofocus: true,
                         child: Scaffold(
                             backgroundColor: const Color(0xFF4CAF50),
-                            body: Column(children: [
-                              SizedBox(
-                                  height: screenSize.height / 4 * 3,
-                                  child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Stack(children: column1),
-                                        SizedBox(width: screenSize.width / 54),
-                                        Stack(children: column2),
-                                        SizedBox(width: screenSize.width / 54),
-                                        Stack(children: column3),
-                                        SizedBox(width: screenSize.width / 54),
-                                        Stack(children: column4),
-                                        SizedBox(width: screenSize.width / 54),
-                                        Stack(children: column5),
-                                        SizedBox(width: screenSize.width / 54),
-                                        Stack(children: column6),
-                                        SizedBox(width: screenSize.width / 54),
-                                        Stack(children: column7),
-                                        SizedBox(width: screenSize.width / 54),
-                                        Stack(children: column8),
-                                        SizedBox(width: screenSize.width / 54),
-                                        Stack(children: column9),
-                                        SizedBox(width: screenSize.width / 54),
-                                        Stack(children: column10)
-                                      ])),
-                              Row(children: [
-                                SizedBox(
-                                    width: screenSize.width / 12 * 1,
-                                    height: screenSize.height / 4,
-                                    child: Column(children: [
-                                      SizedBox(height: screenSize.height / 28),
-                                      SizedBox(
-                                          height: screenSize.height / 14,
-                                          child: ElevatedButton(
-                                            child: Icon(Icons.arrow_back,
-                                                size: screenSize.height / 14),
-                                            onPressed: () {
-                                              backactions();
-                                            },
-                                          )),
-                                      SizedBox(height: screenSize.height / 28),
-                                      SizedBox(
-                                          height: screenSize.height / 14,
-                                          child: ElevatedButton(
-                                            child: Icon(Icons.refresh_sharp,
-                                                size: screenSize.height / 14),
-                                            onPressed: () {
-                                              restart();
-                                            },
-                                          )),
-                                      SizedBox(height: screenSize.height / 28)
-                                    ])),
-                                SizedBox(width: screenSize.width / 12 * 1),
-                                SizedBox(
-                                    width: screenSize.width / 12 * 3,
-                                    child: Stack(children: dom)),
-                                GestureDetector(
-                                    onTap: solver,
-                                    child: Container(
-                                        width: screenSize.width / 12 * 2,
+                            body: DefaultTextStyle(
+                                style: const TextStyle(
+                                    fontFamilyFallback: <String>['Segoe UI']),
+                                child: Column(children: [
+                                  SizedBox(
+                                      height: screenSize.height / 4 * 3,
+                                      child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Stack(children: column1),
+                                            SizedBox(
+                                                width: screenSize.width / 54),
+                                            Stack(children: column2),
+                                            SizedBox(
+                                                width: screenSize.width / 54),
+                                            Stack(children: column3),
+                                            SizedBox(
+                                                width: screenSize.width / 54),
+                                            Stack(children: column4),
+                                            SizedBox(
+                                                width: screenSize.width / 54),
+                                            Stack(children: column5),
+                                            SizedBox(
+                                                width: screenSize.width / 54),
+                                            Stack(children: column6),
+                                            SizedBox(
+                                                width: screenSize.width / 54),
+                                            Stack(children: column7),
+                                            SizedBox(
+                                                width: screenSize.width / 54),
+                                            Stack(children: column8),
+                                            SizedBox(
+                                                width: screenSize.width / 54),
+                                            Stack(children: column9),
+                                            SizedBox(
+                                                width: screenSize.width / 54),
+                                            Stack(children: column10)
+                                          ])),
+                                  Row(children: [
+                                    SizedBox(
+                                        width: screenSize.width / 12 * 1,
                                         height: screenSize.height / 4,
-                                        decoration: BoxDecoration(
-                                            color: const Color(0xFF095912),
-                                            border: Border.all(
-                                              color: Colors.black,
-                                              width: screenSize.width / 1000,
-                                            )),
-                                        child: Center(
-                                            child: Text(
-                                                'Time: ${((_gametime / 60).truncate()).toString().padLeft(2, '0')}:${(_gametime % 60).toString().padLeft(2, '0')}\nScore: $_gamescore',
-                                                style: const TextStyle(
-                                                    color: Color(0xFFFFFFFF)))))),
-                                SizedBox(width: screenSize.width / 12 * 2),
-                                SizedBox(
-                                    width: screenSize.width / 12 * 3,
-                                    child: GestureDetector(
-                                        onTap: addCard,
-                                        child: Stack(children: deck)))
-                              ])
-                            ])))))));
-  }
-
-  void rerecords(int gametime, int gamescore) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (typegame == 0) {
-      int timesuitone = (prefs.getInt('timesuitone') ?? -1);
-      int scoresuitone = (prefs.getInt('scoresuitone') ?? 0);
-      if (timesuitone == -1) {
-        await prefs.setInt('timesuitone', gametime);
-        await prefs.setInt('scoresuitone', gamescore);
-      } else {
-        if (timesuitone > gametime) {
-          await prefs.setInt('timesuitone', gametime);
-        }
-        if (scoresuitone < gamescore) {
-          await prefs.setInt('scoresuitone', gamescore);
-        }
-      }
-    } else if (typegame == 1) {
-      int timesuittwo = (prefs.getInt('timesuittwo') ?? -1);
-      int scoresuittwo = (prefs.getInt('scoresuittwo') ?? 0);
-      if (timesuittwo == -1) {
-        await prefs.setInt('timesuittwo', gametime);
-        await prefs.setInt('scoresuittwo', gamescore);
-      } else {
-        if (timesuittwo > gametime) {
-          await prefs.setInt('timesuittwo', gametime);
-        }
-        if (scoresuittwo < gamescore) {
-          await prefs.setInt('scoresuittwo', gamescore);
-        }
-      }
-    } else {
-      int timesuitfour = (prefs.getInt('timesuitfour') ?? -1);
-      int scoresuitfour = (prefs.getInt('scoresuitfour') ?? 0);
-      if (timesuitfour == -1) {
-        await prefs.setInt('timesuitfour', gametime);
-        await prefs.setInt('scoresuitfour', gamescore);
-      } else {
-        if (timesuitfour > gametime) {
-          await prefs.setInt('timesuitfour', gametime);
-        }
-        if (scoresuitfour < gamescore) {
-          await prefs.setInt('scoresuitfour', gamescore);
-        }
-      }
-    }
+                                        child: Column(children: [
+                                          SizedBox(
+                                              height: screenSize.height / 28),
+                                          SizedBox(
+                                              height: screenSize.height / 14,
+                                              child: ElevatedButton(
+                                                child: Icon(Icons.arrow_back,
+                                                    size:
+                                                        screenSize.height / 14),
+                                                onPressed: () {
+                                                  backactions();
+                                                },
+                                              )),
+                                          SizedBox(
+                                              height: screenSize.height / 28),
+                                          SizedBox(
+                                              height: screenSize.height / 14,
+                                              child: ElevatedButton(
+                                                child: Icon(Icons.refresh_sharp,
+                                                    size:
+                                                        screenSize.height / 14),
+                                                onPressed: () {
+                                                  restart();
+                                                },
+                                              )),
+                                          SizedBox(
+                                              height: screenSize.height / 28)
+                                        ])),
+                                    SizedBox(width: screenSize.width / 12 * 1),
+                                    SizedBox(
+                                        width: screenSize.width / 12 * 3,
+                                        child: Stack(children: dom)),
+                                    GestureDetector(
+                                        onTap: solver,
+                                        child: Container(
+                                            width: screenSize.width / 12 * 2,
+                                            height: screenSize.height / 4,
+                                            decoration: BoxDecoration(
+                                                color: const Color(0xFF095912),
+                                                border: Border.all(
+                                                  color: Colors.black,
+                                                  width:
+                                                      screenSize.width / 1000,
+                                                )),
+                                            child: Center(
+                                                child: Text(
+                                                    'Time: ${((_gametime / 60).truncate()).toString().padLeft(2, '0')}:${(_gametime % 60).toString().padLeft(2, '0')}\nScore: $_gamescore',
+                                                    style: const TextStyle(
+                                                        color: Color(
+                                                            0xFFFFFFFF)))))),
+                                    SizedBox(width: screenSize.width / 12 * 2),
+                                    SizedBox(
+                                        width: screenSize.width / 12 * 3,
+                                        child: GestureDetector(
+                                            onTap: addCard,
+                                            child: Stack(children: deck)))
+                                  ])
+                                ]))))))));
   }
 }
