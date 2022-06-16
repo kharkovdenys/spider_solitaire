@@ -1,12 +1,22 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:spider_solitaire/const_value.dart';
 import 'package:spider_solitaire/dialogs/records.dart';
 import 'package:spider_solitaire/dialogs/setting.dart';
 import 'package:splash_screen_view/SplashScreenView.dart';
 import 'package:flutter/services.dart';
+import 'package:window_manager/window_manager.dart';
 import 'screen_game.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (Platform.isWindows) {
+    await windowManager.ensureInitialized();
+    windowManager.waitUntilReadyToShow().then((_) async {
+      await windowManager.setFullScreen(true);
+    });
+  }
   runApp(const MyApp());
 }
 
