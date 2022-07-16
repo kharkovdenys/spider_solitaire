@@ -13,7 +13,7 @@ class GameScreen extends StatefulWidget {
   const GameScreen({Key? key}) : super(key: key);
 
   @override
-  _GameScreenState createState() => _GameScreenState();
+  State<GameScreen> createState() => _GameScreenState();
 }
 
 class UndoIntent extends Intent {
@@ -176,6 +176,7 @@ class _GameScreenState extends State<GameScreen> {
                 card: PlayingCard(Suit.values[domsuit[i]], CardValue.king),
                 style: myCardStyles)));
       }
+
     }
 
     rebuildcolumn(int columnnum) {

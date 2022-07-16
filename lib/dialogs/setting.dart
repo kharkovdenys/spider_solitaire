@@ -41,7 +41,7 @@ settingsSpiders(context,{Function()? desingCard,Function()? update}) async {
                 onPressed: () async {
                   await prefs.setString('design', design);
                   if(desingCard!=null) desingCard();
-                  Navigator.pop(context);
+                  WidgetsBinding.instance.addPostFrameCallback((_) => Navigator.pop(context));
                   if(update!=null) update();
                 },
                 child: const Text("Save"),
