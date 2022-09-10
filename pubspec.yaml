@@ -1,5 +1,5 @@
 name: spider_solitaire
-description: Flutter app card
+description: Flutter spider solitaire app
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -15,10 +15,18 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+2
+version: 1.0.1+0
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
+
+
+msix_config:
+  display_name: Spider Solitaire Windows
+  publisher_display_name: Denys Kharkov
+  identity_name: kharkovdenys.spidersolitaire
+  logo_path: windows/runner/resources/app_icon.ico
+  msix_version: 1.0.1.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -48,6 +56,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.1
+  msix: ^2.8.18
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
