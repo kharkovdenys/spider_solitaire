@@ -1,16 +1,43 @@
-# spider_solitaire
+<div align="center">
+<h1>Spider Solitaire</h1>
 
-A new card project.
+<p>
 
-## Getting Started
+<img src="https://img.shields.io/github/license/kharkovdenys/spider_solitaire?color=blue" >
 
-This project is a starting point for a Flutter application.
+<img src="https://img.shields.io/badge/made%20by-kharkovdenys-blue.svg" >
 
-A few resources to get you started if this is your first Flutter project:
+<img src="https://img.shields.io/badge/platform-windows android web-blue.svg" >
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+<img src="https://img.shields.io/github/languages/top/kharkovdenys/spider_solitaire.svg">
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<img src="https://img.shields.io/github/stars/kharkovdenys/spider_solitaire.svg?style=flat">
+
+</p>
+</div>
+
+Flutter spider solitaire app
+
+---
+
+<div align="center">
+<img src="./assets/images/demo.gif" alt="Spider Solitaire" />
+</div>
+
+## Dependencies
+
+* [Dart](https://dart.dev/)
+* [Flutter](https://flutter.dev/)
+* [playing_cards](https://pub.dev/packages/playing_cards)
+
+## Controls
+
+<table>
+<thead>
+<tr><th>Keyboard shortcut</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><kbd>Left Ctrl</kbd> + <kbd>R</kbd></td><td>Open the restart dialog box</td></tr>
+<tr><td><kbd>Left Ctrl</kbd> + <kbd>Z</kbd></td><td>Undo</td></tr>
+</tbody>
+</table>
