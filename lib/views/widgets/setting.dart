@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-settingsSpiders(context,{Function()? desingCard,Function()? update}) async {
+settingsSpiders(context, Function()? desingCard, Function()? update) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String design = (prefs.getString('design') ?? 'Default');
   showDialog(
@@ -40,9 +40,10 @@ settingsSpiders(context,{Function()? desingCard,Function()? update}) async {
               ElevatedButton(
                 onPressed: () async {
                   await prefs.setString('design', design);
-                  if(desingCard!=null) desingCard();
-                  WidgetsBinding.instance.addPostFrameCallback((_) => Navigator.pop(context));
-                  if(update!=null) update();
+                  desingCard?.call();
+                  WidgetsBinding.instance
+                      .addPostFrameCallback((_) => Navigator.pop(context));
+                  update?.call();
                 },
                 child: const Text("Save"),
               ),

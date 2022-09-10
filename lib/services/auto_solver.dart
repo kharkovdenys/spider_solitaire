@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'screen_game.dart';
+import 'package:spider_solitaire/views/screens/game.dart';
 
 bool iter = false;
 int countEmpty = 0;
@@ -52,17 +52,17 @@ Future<List<String>> bestMove() async {
   List<String> noEmptyMoves = [], noEmptyNoSuitMoves = [], emptyMoves = [];
   for (int i = 0; i < 10; i++) {
     int countdowncard = 0;
-    for (var element in rowcardFace[i]) {
-      if (element == false) {
+    for (var element in rowcard[i]) {
+      if (element.face == false) {
         countdowncard++;
       }
     }
     int indexstartconsecutive = countdowncard;
     for (int j = countdowncard; j < rowcard[i].length - 1; j++) {
-      if (!((rowcard[i][j + 1] != 11 &&
-                  rowcard[i][j] - 1 == rowcard[i][j + 1]) ||
-              (rowcard[i][j + 1] == 12 && rowcard[i][j] == 0)) ||
-          (rowsuit[i][j] != rowsuit[i][j + 1])) {
+      if (!((rowcard[i][j + 1].value != 11 &&
+                  rowcard[i][j].value - 1 == rowcard[i][j + 1].value) ||
+              (rowcard[i][j + 1].value == 12 && rowcard[i][j].value == 0)) ||
+          (rowcard[i][j].suit != rowcard[i][j + 1].suit)) {
         indexstartconsecutive = j + 1;
       }
     }
@@ -78,12 +78,12 @@ Future<List<String>> bestMove() async {
         } else {
           if (t == indexstartconsecutive) {
             if (rowcard[i].isNotEmpty &&
-                ((rowcard[i][indexstartconsecutive] != 11 &&
-                        rowcard[z].last - 1 ==
-                            rowcard[i][indexstartconsecutive]) ||
-                    (rowcard[i][indexstartconsecutive] == 12 &&
-                        rowcard[z].last == 0))) {
-              if (rowsuit[z].last == rowsuit[i].last) {
+                ((rowcard[i][indexstartconsecutive].value != 11 &&
+                        rowcard[z].last.value - 1 ==
+                            rowcard[i][indexstartconsecutive].value) ||
+                    (rowcard[i][indexstartconsecutive].value == 12 &&
+                        rowcard[z].last.value == 0))) {
+              if (rowcard[z].last.suit == rowcard[i].last.suit) {
                 noEmptyMoves.add('$i,$indexstartconsecutive,$z');
               } else {
                 noEmptyNoSuitMoves.add('$i,$indexstartconsecutive,$z');
@@ -92,34 +92,37 @@ Future<List<String>> bestMove() async {
           } else {
             int odds = t - indexstartconsecutive;
             int countupcard = 0;
-            for (var element in rowcardFace[z]) {
-              if (element == true) {
+            for (var element in rowcard[z]) {
+              if (element.face == true) {
                 countupcard++;
               }
             }
             if (countupcard > odds) {
               int countdowncardT = 0;
-              for (var element in rowcardFace[z]) {
-                if (element == false) {
+              for (var element in rowcard[z]) {
+                if (element.face == false) {
                   countdowncardT++;
                 }
               }
               int indexstartconsecutiveT = countdowncardT;
               for (int j = countdowncardT; j < rowcard[z].length - 1; j++) {
-                if (!((rowcard[z][j + 1] != 11 &&
-                            rowcard[z][j] - 1 == rowcard[z][j + 1]) ||
-                        (rowcard[z][j + 1] == 12 && rowcard[z][j] == 0)) ||
-                    (rowsuit[z][j] != rowsuit[z][j + 1])) {
+                if (!((rowcard[z][j + 1].value != 11 &&
+                            rowcard[z][j].value - 1 ==
+                                rowcard[z][j + 1].value) ||
+                        (rowcard[z][j + 1].value == 12 &&
+                            rowcard[z][j].value == 0)) ||
+                    (rowcard[z][j].suit != rowcard[z][j + 1].suit)) {
                   indexstartconsecutiveT = j + 1;
                 }
               }
               int lenbest = rowcard[z].length - indexstartconsecutiveT;
               if (lenbest > odds) {
                 if (rowcard[i].isNotEmpty &&
-                    ((rowcard[i][t] != 11 &&
-                            rowcard[z].last - 1 == rowcard[i][t]) ||
-                        (rowcard[i][t] == 12 && rowcard[z].last == 0))) {
-                  if (rowsuit[z].last == rowsuit[i].last) {
+                    ((rowcard[i][t].value != 11 &&
+                            rowcard[z].last.value - 1 == rowcard[i][t].value) ||
+                        (rowcard[i][t].value == 12 &&
+                            rowcard[z].last.value == 0))) {
+                  if (rowcard[z].last.suit == rowcard[i].last.suit) {
                     noEmptyMoves.add('$i,$t,$z');
                   } else {
                     noEmptyNoSuitMoves.add('$i,$t,$z');
@@ -148,10 +151,8 @@ void getmove(String move) {
   if (move == 'deck') {
     for (int i = 0; i < 10; i++) {
       rowcard[i].add(deckcard.first);
-      rowsuit[i].add(deckcardsuit.first);
       deckcard.removeAt(0);
-      deckcardsuit.removeAt(0);
-      rowcardFace[i].add(true);
+      rowcard[i].last.setFace = true;
     }
     deck.removeLast();
   } else {
@@ -163,28 +164,25 @@ void getmove(String move) {
         .getRange(tempindexstart, rowcard[tempindexrow].length));
     rowcard[tempindexrow]
         .removeRange(tempindexstart, rowcard[tempindexrow].length);
-    rowsuit[columnnum].addAll(rowsuit[tempindexrow]
-        .getRange(tempindexstart, rowsuit[tempindexrow].length));
-    rowsuit[tempindexrow]
-        .removeRange(tempindexstart, rowsuit[tempindexrow].length);
-    rowcardFace[columnnum].addAll(rowcardFace[tempindexrow]
-        .getRange(tempindexstart, rowcardFace[tempindexrow].length));
-    rowcardFace[tempindexrow]
-        .removeRange(tempindexstart, rowcardFace[tempindexrow].length);
-    if (rowcardFace[tempindexrow].isNotEmpty &&
-        rowcardFace[tempindexrow].last == false) {
-      rowcardFace[tempindexrow][rowcardFace[tempindexrow].length - 1] = true;
+    if (rowcard[tempindexrow].isNotEmpty &&
+        rowcard[tempindexrow].last.face == false) {
+      rowcard[tempindexrow][rowcard[tempindexrow].length - 1].face = true;
     }
     if (rowcard[columnnum].isNotEmpty &&
-        rowcard[columnnum].last == 12 &&
+        rowcard[columnnum].last.value == 12 &&
         rowcard[columnnum].length >= 13 &&
-        rowcardFace[columnnum].last == true) {
+        rowcard[columnnum].last.face == true) {
       int flag = 1;
-      int suit = rowsuit[columnnum].last;
+      int suit = rowcard[columnnum].last.suit;
       for (int i = 0; i < 12; i++) {
-        if (!(rowcard[columnnum][rowcard[columnnum].length - 2 - i] == i &&
-            rowcardFace[columnnum][rowcard[columnnum].length - 2 - i] == true &&
-            rowsuit[columnnum][rowcard[columnnum].length - 2 - i] == suit)) {
+        if (!(rowcard[columnnum]
+                        [rowcard[columnnum].length - 2 - i]
+                    .value ==
+                i &&
+            rowcard[columnnum][rowcard[columnnum].length - 2 - i].face ==
+                true &&
+            rowcard[columnnum][rowcard[columnnum].length - 2 - i].suit ==
+                suit)) {
           flag = 0;
           break;
         }
@@ -192,14 +190,9 @@ void getmove(String move) {
       if (flag == 1) {
         rowcard[columnnum].removeRange(
             rowcard[columnnum].length - 13, rowcard[columnnum].length);
-        rowcardFace[columnnum].removeRange(
-            rowcardFace[columnnum].length - 13, rowcardFace[columnnum].length);
-        rowsuit[columnnum].removeRange(
-            rowsuit[columnnum].length - 13, rowsuit[columnnum].length);
-        if (rowcardFace[columnnum].isNotEmpty &&
-            rowcardFace[columnnum].last == false) {
-          rowcardFace[columnnum].removeLast();
-          rowcardFace[columnnum].add(true);
+        if (rowcard[columnnum].isNotEmpty &&
+            rowcard[columnnum].last.face == false) {
+          rowcard[columnnum].last.setFace = true;
         }
         domsuit.add(suit);
       }

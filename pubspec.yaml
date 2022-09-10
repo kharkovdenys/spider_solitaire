@@ -34,10 +34,9 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  splash_screen_view: ^3.0.0
   playing_cards: ^0.3.1+9
-  shared_preferences: ^2.0.8
-  window_manager: ^0.2.5
+  shared_preferences: ^2.0.15
+  window_manager: ^0.2.7
 
 dev_dependencies:
   flutter_test:
@@ -60,33 +59,34 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   assets:
-    - spider.png
-    - asset/Essberger/back.png
-    - asset/Essberger/spade.png
-    - asset/Essberger/js.png
-    - asset/Essberger/as.png
-    - asset/Essberger/ks.png
-    - asset/Essberger/qs.png
-    - asset/Essberger/heart.png
-    - asset/Essberger/jh.png
-    - asset/Essberger/kh.png
-    - asset/Essberger/qh.png
-    - asset/Essberger/diamond.png
-    - asset/Essberger/club.png
-    - asset/Essberger/jd.png
-    - asset/Essberger/kd.png
-    - asset/Essberger/qd.png
-    - asset/Essberger/jc.png
-    - asset/Essberger/kc.png
-    - asset/Essberger/qc.png
+    - assets/images/spider.png
+    - assets/images/Essberger/back.png
+    - assets/images/Essberger/spade.png
+    - assets/images/Essberger/js.png
+    - assets/images/Essberger/as.png
+    - assets/images/Essberger/ks.png
+    - assets/images/Essberger/qs.png
+    - assets/images/Essberger/heart.png
+    - assets/images/Essberger/jh.png
+    - assets/images/Essberger/kh.png
+    - assets/images/Essberger/qh.png
+    - assets/images/Essberger/diamond.png
+    - assets/images/Essberger/club.png
+    - assets/images/Essberger/jd.png
+    - assets/images/Essberger/kd.png
+    - assets/images/Essberger/qd.png
+    - assets/images/Essberger/jc.png
+    - assets/images/Essberger/kc.png
+    - assets/images/Essberger/qc.png
+    
   uses-material-design: true
   fonts:
     - family: Segoe UI
       fonts:
-        - asset: asset/font/SegoeUI/seguiemj.ttf
+        - asset: assets/font/SegoeUI/seguiemj.ttf
     - family: Roboto
       fonts:
-        - asset: asset/font/Roboto/Roboto-Light.ttf
+        - asset: assets/font/Roboto/Roboto-Light.ttf
           weight: 300
   # To add assets to your application, add an assets section, like this:
   # assets:
