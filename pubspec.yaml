@@ -92,10 +92,10 @@ flutter:
   fonts:
     - family: Segoe UI
       fonts:
-        - asset: assets/font/SegoeUI/seguiemj.ttf
+        - asset: assets/fonts/SegoeUI/seguiemj.ttf
     - family: Roboto
       fonts:
-        - asset: assets/font/Roboto/Roboto-Light.ttf
+        - asset: assets/fonts/Roboto/Roboto-Light.ttf
           weight: 300
   # To add assets to your application, add an assets section, like this:
   # assets:
